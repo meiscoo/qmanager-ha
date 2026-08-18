@@ -1,0 +1,30 @@
+send_at_command:
+  name: Send AT command
+  description: Send a raw AT command to the modem and return its response.
+  fields:
+    device_id:
+      name: Device
+      description: The QManager modem device.
+      required: true
+      selector:
+        device:
+          integration: qmanager
+    command:
+      name: Command
+      description: The raw AT command to send, e.g. AT+QENG="servingcell".
+      required: true
+      example: 'AT+QENG="servingcell"'
+      selector:
+        text:
+
+start_cell_scan:
+  name: Start cell scan
+  description: Start the QManager cell scanner daemon. Equivalent to the "Start Cell Scan" button.
+  fields:
+    device_id:
+      name: Device
+      description: The QManager modem device.
+      required: true
+      selector:
+        device:
+          integration: qmanager
