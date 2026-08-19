@@ -9,7 +9,6 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SSL
 from homeassistant.core import callback
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .api import QManagerApiClient, QManagerAuthError, QManagerConnectionError
 from .const import (
@@ -33,8 +32,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 async def _validate_and_get_imei(hass, data: dict[str, Any]) -> str | None:
     """Try logging in and pulling status; return the modem IMEI if available."""
-    session = async_create_clientsession(hass, verify_ssl=False)
-    try:
+    async with aiohttp.ClientSession() as session:
         api = QManagerApiClient(
             session,
             data[CONF_HOST],
@@ -44,8 +42,6 @@ async def _validate_and_get_imei(hass, data: dict[str, Any]) -> str | None:
         )
         await api.async_login()
         status = await api.async_get_status()
-    finally:
-        await session.close()
 
     return status.get("device", {}).get("imei")
 
