@@ -55,11 +55,18 @@ class QManagerApiClient:
                 timeout=aiohttp.ClientTimeout(total=15),
             )
         except aiohttp.ClientError as err:
+            _LOGGER.warning("QManager login: connection error: %r", err)
             raise QManagerConnectionError(str(err)) from err
 
         async with resp:
             if resp.status == 401:
                 self._logged_in = False
+                raw_text = await resp.text()
+                _LOGGER.warning(
+                    "QManager login: got 401, body=%r, request_headers=%r",
+                    raw_text,
+                    dict(resp.request_info.headers),
+                )
                 raise QManagerAuthError("Invalid password")
             raw_text = await resp.text()
             try:
