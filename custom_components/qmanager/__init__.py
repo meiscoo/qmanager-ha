@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import aiohttp
 import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SSL, Platform
@@ -36,7 +37,12 @@ QManagerConfigEntry = ConfigEntry[QManagerRuntimeData]
 
 async def async_setup_entry(hass: HomeAssistant, entry: QManagerConfigEntry) -> bool:
     """Set up QManager from a config entry."""
-    session = async_create_clientsession(hass, verify_ssl=False)
+    # unsafe=True: QManager modems are typically reached by bare IP (LAN or
+    # Tailscale), and aiohttp's default cookie jar silently drops Set-Cookie
+    # for IP hosts otherwise, which breaks session auth after login.
+    session = async_create_clientsession(
+        hass, verify_ssl=False, cookie_jar=aiohttp.CookieJar(unsafe=True)
+    )
     api = QManagerApiClient(
         session,
         entry.data[CONF_HOST],

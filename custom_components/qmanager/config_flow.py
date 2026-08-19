@@ -32,7 +32,12 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 async def _validate_and_get_imei(hass, data: dict[str, Any]) -> str | None:
     """Try logging in and pulling status; return the modem IMEI if available."""
-    async with aiohttp.ClientSession() as session:
+    # unsafe=True: QManager modems are typically reached by bare IP (LAN or
+    # Tailscale), and aiohttp's default cookie jar silently drops Set-Cookie
+    # for IP hosts otherwise, which breaks session auth after login.
+    async with aiohttp.ClientSession(
+        cookie_jar=aiohttp.CookieJar(unsafe=True)
+    ) as session:
         api = QManagerApiClient(
             session,
             data[CONF_HOST],
