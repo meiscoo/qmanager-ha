@@ -10,6 +10,13 @@
           "password": "QManager password",
           "ssl": "Use HTTPS"
         }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate QManager",
+        "description": "The QManager password for {host} no longer works. Enter the new password.",
+        "data": {
+          "password": "QManager password"
+        }
       }
     },
     "error": {
@@ -18,7 +25,9 @@
       "unknown": "Unexpected error"
     },
     "abort": {
-      "already_configured": "This QManager modem is already configured"
+      "already_configured": "This QManager modem is already configured",
+      "reauth_successful": "Re-authentication was successful",
+      "wrong_device": "The device at this address is a different modem than the one originally configured"
     }
   },
   "options": {
@@ -32,37 +41,91 @@
   },
   "entity": {
     "sensor": {
-      "network_type": { "name": "Network type" },
-      "carrier": { "name": "Carrier" },
-      "service_status": { "name": "Service status" },
-      "wan_ipv4": { "name": "WAN IPv4 address" },
-      "lte_band": { "name": "LTE band" },
-      "lte_rsrp": { "name": "LTE RSRP" },
-      "lte_rsrq": { "name": "LTE RSRQ" },
-      "lte_sinr": { "name": "LTE SINR" },
-      "nr_band": { "name": "5G NR band" },
-      "nr_rsrp": { "name": "5G NR RSRP" },
-      "nr_rsrq": { "name": "5G NR RSRQ" },
-      "nr_sinr": { "name": "5G NR SINR" },
-      "temperature": { "name": "Modem temperature" },
-      "cpu_usage": { "name": "CPU usage" },
-      "memory_used": { "name": "Memory used" },
-      "uptime": { "name": "Uptime" },
-      "connection_uptime": { "name": "Connection uptime" },
-      "latency": { "name": "Ping latency" },
-      "packet_loss": { "name": "Packet loss" },
-      "watchdog_state": { "name": "Watchdog state" },
-      "watchdog_recoveries": { "name": "Watchdog recoveries" }
+      "network_type": {
+        "name": "Network type"
+      },
+      "carrier": {
+        "name": "Carrier"
+      },
+      "service_status": {
+        "name": "Service status"
+      },
+      "wan_ipv4": {
+        "name": "WAN IPv4 address"
+      },
+      "lte_band": {
+        "name": "LTE band"
+      },
+      "lte_rsrp": {
+        "name": "LTE RSRP"
+      },
+      "lte_rsrq": {
+        "name": "LTE RSRQ"
+      },
+      "lte_sinr": {
+        "name": "LTE SINR"
+      },
+      "nr_band": {
+        "name": "5G NR band"
+      },
+      "nr_rsrp": {
+        "name": "5G NR RSRP"
+      },
+      "nr_rsrq": {
+        "name": "5G NR RSRQ"
+      },
+      "nr_sinr": {
+        "name": "5G NR SINR"
+      },
+      "temperature": {
+        "name": "Modem temperature"
+      },
+      "cpu_usage": {
+        "name": "CPU usage"
+      },
+      "memory_used": {
+        "name": "Memory used"
+      },
+      "uptime": {
+        "name": "Uptime"
+      },
+      "connection_uptime": {
+        "name": "Connection uptime"
+      },
+      "latency": {
+        "name": "Ping latency"
+      },
+      "packet_loss": {
+        "name": "Packet loss"
+      },
+      "watchdog_state": {
+        "name": "Watchdog state"
+      },
+      "watchdog_recoveries": {
+        "name": "Watchdog recoveries"
+      }
     },
     "binary_sensor": {
-      "internet_available": { "name": "Internet available" },
-      "modem_reachable": { "name": "Modem reachable" },
-      "carrier_aggregation": { "name": "Carrier aggregation active" },
-      "sim_failover_active": { "name": "SIM failover active" },
-      "watchdog_enabled": { "name": "Watchdog enabled" }
+      "internet_available": {
+        "name": "Internet available"
+      },
+      "modem_reachable": {
+        "name": "Modem reachable"
+      },
+      "carrier_aggregation": {
+        "name": "Carrier aggregation active"
+      },
+      "sim_failover_active": {
+        "name": "SIM failover active"
+      },
+      "watchdog_enabled": {
+        "name": "Watchdog enabled"
+      }
     },
     "button": {
-      "start_cell_scan": { "name": "Start cell scan" }
+      "start_cell_scan": {
+        "name": "Start cell scan"
+      }
     }
   },
   "services": {
@@ -70,15 +133,24 @@
       "name": "Send AT command",
       "description": "Send a raw AT command to the modem and return its response.",
       "fields": {
-        "device_id": { "name": "Device", "description": "The QManager modem device." },
-        "command": { "name": "Command", "description": "The raw AT command to send." }
+        "device_id": {
+          "name": "Device",
+          "description": "The QManager modem device."
+        },
+        "command": {
+          "name": "Command",
+          "description": "The raw AT command to send."
+        }
       }
     },
     "start_cell_scan": {
       "name": "Start cell scan",
       "description": "Start the QManager cell scanner daemon.",
       "fields": {
-        "device_id": { "name": "Device", "description": "The QManager modem device." }
+        "device_id": {
+          "name": "Device",
+          "description": "The QManager modem device."
+        }
       }
     }
   }

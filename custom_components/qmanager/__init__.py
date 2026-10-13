@@ -8,7 +8,7 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_SSL, Platform
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
@@ -54,7 +54,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: QManagerConfigEntry) -> 
     try:
         await api.async_login()
     except QManagerAuthError as err:
-        raise ConfigEntryNotReady(f"Invalid QManager password: {err}") from err
+        raise ConfigEntryAuthFailed(f"Invalid QManager password: {err}") from err
     except QManagerConnectionError as err:
         raise ConfigEntryNotReady(f"Could not reach QManager at {entry.data[CONF_HOST]}: {err}") from err
 

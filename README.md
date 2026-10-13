@@ -59,6 +59,8 @@ Settings → Devices & Services → Add Integration → "QManager Cell Modem". Y
 The config flow logs in and pulls a status snapshot to validate the connection before creating the entry, and uses
 the modem's IMEI as the unique ID so re-adding the same modem won't create duplicates.
 
+If you change the QManager password, Home Assistant will raise a re-authentication prompt (Settings → Devices & Services → QManager → Reconfigure/Re-authenticate); enter the new password and the integration reloads. The flow also checks the IMEI so it can't silently re-bind to a different modem.
+
 The poll interval defaults to 30 seconds and can be changed from the integration's **Configure** options.
 
 ## Notes on the QManager API

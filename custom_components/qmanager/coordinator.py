@@ -7,6 +7,7 @@ from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import QManagerApiClient, QManagerAuthError, QManagerConnectionError
@@ -40,6 +41,8 @@ class QManagerDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             return await self.api.async_get_status()
         except QManagerAuthError as err:
-            raise UpdateFailed(f"Authentication with QManager failed: {err}") from err
+            raise ConfigEntryAuthFailed(
+                f"Authentication with QManager failed: {err}"
+            ) from err
         except QManagerConnectionError as err:
             raise UpdateFailed(f"Could not reach QManager: {err}") from err

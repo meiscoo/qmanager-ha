@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
 from typing import Any
 
 import aiohttp
@@ -51,6 +52,9 @@ async def _validate_and_get_imei(hass, data: dict[str, Any]) -> str | None:
     return status.get("device", {}).get("imei")
 
 
+STEP_REAUTH_DATA_SCHEMA = vol.Schema({vol.Required(CONF_PASSWORD): str})
+
+
 class QManagerConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for QManager."""
 
@@ -85,6 +89,45 @@ class QManagerConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
+        )
+
+    async def async_step_reauth(
+        self, entry_data: Mapping[str, Any]
+    ) -> ConfigFlowResult:
+        """Start re-authentication when the stored password stops working."""
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Ask for the new QManager password and validate it."""
+        errors: dict[str, str] = {}
+        entry = self._get_reauth_entry()
+
+        if user_input is not None:
+            data = {**entry.data, CONF_PASSWORD: user_input[CONF_PASSWORD]}
+            try:
+                imei = await _validate_and_get_imei(self.hass, data)
+            except QManagerAuthError:
+                errors["base"] = "invalid_auth"
+            except (QManagerConnectionError, aiohttp.ClientError):
+                errors["base"] = "cannot_connect"
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Unexpected error during QManager reauth")
+                errors["base"] = "unknown"
+            else:
+                # Guard against the host now answering as a different modem.
+                if imei and entry.unique_id and imei != entry.unique_id:
+                    return self.async_abort(reason="wrong_device")
+                return self.async_update_reload_and_abort(
+                    entry, data_updates={CONF_PASSWORD: user_input[CONF_PASSWORD]}
+                )
+
+        return self.async_show_form(
+            step_id="reauth_confirm",
+            data_schema=STEP_REAUTH_DATA_SCHEMA,
+            description_placeholders={"host": entry.data[CONF_HOST]},
+            errors=errors,
         )
 
     @staticmethod
